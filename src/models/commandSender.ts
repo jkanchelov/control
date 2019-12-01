@@ -1,45 +1,37 @@
-import * as WebSocket from "ws";
-import * as log from "fancy-log";
-import * as uuid from "uuid/v4";
-
+import CommandResponse from "./abstract/commandResponse";
+import Command from "./abstract/command";
 import WSClient from "./wsClient";
 
-export default class CommandSender {
-    /**
-     *
-     */
-    private messageID: string;
-    private ws: WSClient;
+export default async (
+    ws: WSClient,
+    { command, type, commandID, commandOptions }: Command
+): Promise<CommandResponse> => {
+    let responseData: CommandResponse;
+    ws.wsData.on("message", handleResponse);
+    ws.wsData.send(
+        JSON.stringify({
+            type,
+            command,
+            commandID,
+            commandOptions,
+        })
+    );
 
-    private listenerFunction;
+    return await new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
+            if (responseData) {
+                clearInterval(interval);
+                resolve(responseData);
+            }
+        }, 1000);
+    });
 
-    constructor(ws: WSClient) {
-        this.ws = ws;
+    function handleResponse(message: string) {
+        responseData = JSON.parse(message);
 
-        this.messageID = uuid();
-
-        this.listenerFunction = this.handleResponse.bind(this);
-        ws.wsData.on("message", this.listenerFunction);
-
-        // TODO
-        log("Sending command..");
-        ws.wsData.send(
-            JSON.stringify({
-                type: "node",
-                command: `const username = require('os').userInfo().username;console.log(username)`,
-                commandID: this.messageID,
-            })
-        );
-    }
-
-    private handleResponse(message) {
-        const data = JSON.parse(message);
-
-        if (data.commandID == this.messageID) {
-            log("Response received\n", data.stdout, data.stderr);
-
-            this.ws.wsData.off("message", this.listenerFunction);
-            this.ws = null;
+        if (responseData.commandID == commandID) {
+            ws.wsData.off("message", handleResponse);
+            ws = null;
         }
     }
-}
+};
