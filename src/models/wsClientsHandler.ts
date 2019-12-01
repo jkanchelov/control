@@ -1,7 +1,7 @@
 import * as WebSocket from "ws";
-import Client from "./wsClient";
+import * as log from "fancy-log";
 
-import CommandSender from "./commandSender";
+import Client from "./wsClient";
 
 export default class WebSocketClientsHandler {
     private _activeClients: Client[];
@@ -10,29 +10,21 @@ export default class WebSocketClientsHandler {
         this._activeClients = [];
 
         wss.on("connection", (ws: WebSocket) => {
-            //connection is up, let's add a simple simple event
-            this.clients.push(new Client(ws));
+            const client = new Client(ws);
+            this.clients.push(client);
 
             ws.on("message", (message: string) => {
                 const { command, name } = JSON.parse(message);
                 if (command == "subscribe") {
-                    this.getClientBySocket(ws).id = name;
+                    client.id = name;
 
-                    // DEBUG
-                    // REMOVE
-                    const handle = setInterval(() => {
-                        const target = this.getClientBySocket(ws);
-                        if (target) {
-                            new CommandSender(this.getClientBySocket(target.wsData));
-                        } else {
-                            clearInterval(handle);
-                        }
-                    }, 5000);
+                    log(`${name} - connected`);
                 }
             });
 
             ws.on("close", () => {
-                this.clients.splice(this.clients.indexOf(this.getClientBySocket(ws)), 1);
+                log(`connection closed with: ${client.id}`);
+                this.clients.splice(this.clients.indexOf(client), 1);
             });
         });
     }
