@@ -2,10 +2,7 @@ import CommandResponse from "./abstract/commandResponse";
 import Command from "./abstract/command";
 import WSClient from "./wsClient";
 
-export default async (
-    ws: WSClient,
-    { command, type, commandID, commandOptions }: Command
-): Promise<CommandResponse> => {
+export default (ws: WSClient, { command, type, commandID, commandOptions }: Command): Promise<CommandResponse> => {
     let responseData: CommandResponse;
     ws.wsData.on("message", handleResponse);
     ws.wsData.send(
@@ -17,7 +14,7 @@ export default async (
         })
     );
 
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
             if (responseData) {
                 clearInterval(interval);
