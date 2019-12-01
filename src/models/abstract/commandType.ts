@@ -1,7 +1,7 @@
 enum CommandType {
     node = "node",
     download = "download",
-    execute = "execute",
+    shell = "shell",
 }
 
 export default CommandType;
