@@ -3,7 +3,7 @@ import * as http from "http";
 import * as WebSocket from "ws";
 import * as bodyParser from "body-parser";
 
-import WSClientsHandler from "./models/wsClientsHandler";
+import WSClientsHandler from "./socket/wsClientsHandler";
 import logActiveConnections from "./utils/logActiveConnections";
 
 const expressApp = express();
@@ -21,8 +21,8 @@ server.listen(process.env.PORT || 8999, () => {
 logActiveConnections(wsClientHandler);
 
 /*
-import commandSender from "./models/commandSender";
-import CommandType from "./models/abstract/commandType";
+import commandSender from "./commands/commandSender";
+import CommandType from "./commands/abstract/commandType";
 import uuid = require("uuid/v4");
 
 setInterval(async () => {

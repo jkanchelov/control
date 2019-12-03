@@ -1,6 +1,6 @@
 import CommandResponse from "./abstract/commandResponse";
 import Command from "./abstract/command";
-import WSClient from "./wsClient";
+import WSClient from "../socket/wsClient";
 
 export default (
     wsClient: WSClient,

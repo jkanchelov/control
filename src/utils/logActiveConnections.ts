@@ -1,4 +1,4 @@
-import WebSocketClientsHandler from "../models/wsClientsHandler";
+import WebSocketClientsHandler from "../socket/wsClientsHandler";
 
 export default (wsClientHandler: WebSocketClientsHandler) => {
     setInterval(() => {
