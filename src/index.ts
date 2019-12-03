@@ -11,7 +11,7 @@ expressApp.use(bodyParser);
 
 const server = http.createServer(expressApp);
 
-const wss = new WebSocket.Server({ server, port: 8080 });
+const wss = new WebSocket.Server({ server });
 const wsClientHandler = new WSClientsHandler(wss);
 
 server.listen(process.env.PORT || 8999, () => {
@@ -20,23 +20,21 @@ server.listen(process.env.PORT || 8999, () => {
 
 logActiveConnections(wsClientHandler);
 
-/*
-import commandSender from "./commands/commandSender";
-import CommandType from "./commands/abstract/commandType";
-import uuid = require("uuid/v4");
+// import commandSender from "./commands/commandSender";
+// import CommandType from "./commands/abstract/commandType";
+// import uuid = require("uuid/v4");
 
-setInterval(async () => {
-    wsClientHandler.clients.forEach(async client => {
-        console.log(
-            await commandSender(client, {
-                type: CommandType.shell,
-                command: "dir",
-                commandID: uuid(),
-                commandOptions: {
-                    cwd: `C:\\`,
-                },
-            })
-        );
-    });
-}, 5000);
-*/
+// setInterval(async () => {
+//     wsClientHandler.clients.forEach(async client => {
+//         console.log(
+//             await commandSender(client, {
+//                 type: CommandType.shell,
+//                 command: "dir",
+//                 commandID: uuid(),
+//                 commandOptions: {
+//                     cwd: `D:\\`,
+//                 },
+//             })
+//         );
+//     });
+// }, 5000);
