@@ -13,7 +13,9 @@ export default class WebSocketClientsHandler {
             const client = new Client(ws);
             this.clients.push(client);
 
-            ws.on("message", (message: string) => {
+            client.ws.setMaxListeners(30);
+
+            client.ws.on("message", (message: string) => {
                 const { command, name } = JSON.parse(message);
                 if (command == "subscribe") {
                     client.id = name;
@@ -22,11 +24,25 @@ export default class WebSocketClientsHandler {
                 }
             });
 
-            ws.on("close", () => {
+            client.ws.on("close", () => {
                 log(`connection closed with: ${client.id}`);
+
+                client.dispose();
                 this.clients.splice(this.clients.indexOf(client), 1);
             });
         });
+
+        const interval = setInterval(() => {
+            wss.clients.forEach(ws => {
+                const wsClient = this.getClientBySocket(ws);
+                if (wsClient.isAlive === false) {
+                    ws.terminate();
+                }
+
+                wsClient.isAlive = false;
+                wsClient.ws.ping();
+            });
+        }, 10000);
     }
 
     get clients(): Client[] {
@@ -34,6 +50,6 @@ export default class WebSocketClientsHandler {
     }
 
     private getClientBySocket(ws: WebSocket): Client {
-        return this.clients.filter(client => ws == client.wsData)[0];
+        return this.clients.filter(client => ws == client.ws)[0];
     }
 }

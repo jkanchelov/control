@@ -2,10 +2,13 @@ import CommandResponse from "./abstract/commandResponse";
 import Command from "./abstract/command";
 import WSClient from "./wsClient";
 
-export default (ws: WSClient, { command, type, commandID, commandOptions }: Command): Promise<CommandResponse> => {
+export default (
+    wsClient: WSClient,
+    { command, type, commandID, commandOptions }: Command
+): Promise<CommandResponse> => {
     let responseData: CommandResponse;
-    ws.wsData.on("message", handleResponse);
-    ws.wsData.send(
+    wsClient.ws.on("message", handleResponse);
+    wsClient.ws.send(
         JSON.stringify({
             type,
             command,
@@ -27,8 +30,8 @@ export default (ws: WSClient, { command, type, commandID, commandOptions }: Comm
         responseData = JSON.parse(message);
 
         if (responseData.commandID == commandID) {
-            ws.wsData.off("message", handleResponse);
-            ws = null;
+            wsClient.ws.off("message", handleResponse);
+            wsClient = null;
         }
     }
 };

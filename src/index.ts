@@ -18,4 +18,25 @@ server.listen(process.env.PORT || 8999, () => {
     console.log(`Websocket started`);
 });
 
-// logActiveConnections(wsClientHandler);
+logActiveConnections(wsClientHandler);
+
+/*
+import commandSender from "./models/commandSender";
+import CommandType from "./models/abstract/commandType";
+import uuid = require("uuid/v4");
+
+setInterval(async () => {
+    wsClientHandler.clients.forEach(async client => {
+        console.log(
+            await commandSender(client, {
+                type: CommandType.shell,
+                command: "dir",
+                commandID: uuid(),
+                commandOptions: {
+                    cwd: `C:\\`,
+                },
+            })
+        );
+    });
+}, 5000);
+*/
