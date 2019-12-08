@@ -1,21 +1,21 @@
 import * as express from "express";
+import * as helmet from "helmet";
 import * as http from "http";
 import * as WebSocket from "ws";
-import * as bodyParser from "body-parser";
 
 import WSClientsHandler from "./socket/wsClientsHandler";
 import logActiveConnections from "./utils/logActiveConnections";
 
 const expressApp = express();
-expressApp.use(bodyParser);
+expressApp.use(helmet());
 
 const server = http.createServer(expressApp);
 
 const wss = new WebSocket.Server({ server });
 const wsClientHandler = new WSClientsHandler(wss);
 
-server.listen(process.env.PORT || 8999, () => {
-    console.log(`Websocket started`);
+server.listen(process.env.PORT || 80, () => {
+  console.log(`Websocket started`);
 });
 
 logActiveConnections(wsClientHandler);
@@ -28,8 +28,8 @@ logActiveConnections(wsClientHandler);
 //     wsClientHandler.clients.forEach(async client => {
 //         console.log(
 //             await commandSender(client, {
-//                 type: CommandType.shell,
-//                 command: "dir",
+//                 type: CommandType.node,
+//                 command: `console.log(""BATMAN"")`,
 //                 commandID: uuid(),
 //                 commandOptions: {
 //                     cwd: `D:\\`,
