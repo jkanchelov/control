@@ -15,7 +15,7 @@ const wss = new WebSocket.Server({ server });
 const wsClientHandler = new WSClientsHandler(wss);
 
 server.listen(process.env.PORT || 80, () => {
-  console.log(`Websocket started`);
+    console.log(`Websocket started`);
 });
 
 logActiveConnections(wsClientHandler);
